@@ -6,14 +6,32 @@ import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { Audio } from "expo-av";
 import { Sound } from 'expo-av/build/Audio';
 import Slider from '@react-native-community/slider';
+import TrackPlayer from 'react-native-track-player';
 
 const PlayerWidget = () => {
+
+    // const playSong1 = async () => {
+    //     await TrackPlayer.setupPlayer();
+    //     // Add a track to the queue
+    //     await TrackPlayer.add({
+    //         id: 'trackId',
+    //         url: 'http://dl.navasong.ir/Media/Playlist/Taylor%20Swift/This%20Is%20Taylor%20Swift%20%282018%29/01%20Delicate.mp3',
+    //         title: 'Track Title',
+    //         artist: 'Track Artist',
+    //         artwork: 'https://upload.wikimedia.org/wikipedia/en/5/59/Delicate_by_Taylor_Swift_%28Sawyr_and_Ryan_Tedder_remix%29.png'
+    //     });
+
+    //     // Start playing it
+    //     await TrackPlayer.play();
+    // }
+
 
     const [song, setSong] = useState<any|null>(null)
 
     const playSongEventHandler = (arg: Song) => {
         setSong(arg)
         playCurrentSong(arg);
+        // playSong1();
     }
 
     // let lastPosition: number = 0;
