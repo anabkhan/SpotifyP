@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Text, View, Image, TouchableOpacity, DeviceEventEmitter, AsyncStorage } from "react-native";
+import { Text, View, Image, TouchableOpacity, DeviceEventEmitter, AsyncStorage, ActivityIndicator } from "react-native";
 import { Favourites, Song } from '../../types';
 import styles from './styles';
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
@@ -38,6 +38,8 @@ const PlayerWidget = () => {
 
     const sound = useRef<Sound|null>(null)
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isPausedByUser, setIsPausedByUser] = useState<boolean>(false);
     const [isSliderMoving, setIsSliderMoving] = useState<boolean>(false);
     const [duration, setDuration] = useState<number|null>(null);
     const [lastPosition, setLastPosition] = useState<number>(0);
@@ -46,6 +48,7 @@ const PlayerWidget = () => {
 
     const onPlaybackStatusUpdate = (status: any) => {
         setIsPlaying(status.isPlaying)
+        setIsLoading(!status.isPlaying)
         setDuration(status.durationMillis);
         setPosition(status.positionMillis)
     }
@@ -102,6 +105,7 @@ const PlayerWidget = () => {
         } else {
             await sound.current?.playAsync();
         }
+        setIsPausedByUser(isPlaying);
     }
 
     const updateRecentlyPlayed = async (song: Song) => {
@@ -166,15 +170,13 @@ const PlayerWidget = () => {
     if (song) {
         return (
             <View style={styles.container}>
-                {/* <View style={[styles.progress, {width: `${getProgress()}%`}]} /> */}
                 <Slider
                         style={{width: '100%', height: 5, zIndex:99}}
                         minimumValue={0}
-                        maximumValue={100}
+                        maximumValue={50}
                         value={isSliderMoving ? lastPosition : getProgress()}
-                        tapToSeek={true}
                         minimumTrackTintColor="#FFFFFF"
-                        maximumTrackTintColor="#000000"
+                        maximumTrackTintColor="grey"
                         onSlidingStart={(value: number) => {setIsSliderMoving(true);setLastPosition(value)}}
                         onSlidingComplete={onSlidingComplete}
                     />
@@ -192,7 +194,8 @@ const PlayerWidget = () => {
                                 <AntDesign name={isFavourite.current ? "heart" : "hearto"} size={30} color={"white"} />
                             </TouchableOpacity>
                             <TouchableOpacity onPress={onPlayPausePress} >
-                                <FontAwesome name={isPlaying ? 'pause' : 'play'} size={30} color={"white"} />
+                                {(!isLoading || isPausedByUser) && <FontAwesome name={isPlaying ? 'pause' : 'play'} size={30} color={"white"} />}
+                                {isLoading && !isPausedByUser && <ActivityIndicator />}
                             </TouchableOpacity>
                         </View>
                     </View>

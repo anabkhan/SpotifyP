@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
+import { AppRegistry } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import PlayerWidget from './components/PlayerWidget';
 
@@ -23,3 +24,5 @@ export default function App() {
     );
   }
 }
+
+AppRegistry.registerComponent('main', () => App);

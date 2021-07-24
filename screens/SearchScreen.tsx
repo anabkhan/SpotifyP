@@ -7,6 +7,8 @@ import { Song } from '../types';
 import Loader from "../components/Loader";
 import { Ionicons } from '@expo/vector-icons'; 
 
+let suggestionAPIRequest: any = null;
+
 export default function SearchScreen() {
 
   const [text, onChangeText] = React.useState<string>("");
@@ -16,6 +18,9 @@ export default function SearchScreen() {
 
   const showSearchResult = async () => {
     if (text && text.length > 0) {
+      if (suggestionAPIRequest != null) {
+        clearTimeout(suggestionAPIRequest)
+      }
       setShowLoader(true);
       await axios.get(`${SEARCH_URL}?searchQuery=${text}`)
       .then(function (response) {
@@ -46,15 +51,25 @@ export default function SearchScreen() {
 
   const showSuggestions = async (text: string) => {
     console.log(`${GET_SUGGESTION_URL}?searchQuery=${text}`, text)
-    await axios.get(`${GET_SUGGESTION_URL}?searchQuery=${text}`)
-        .then(function (response) {
-          setResults(null);
-          setSuggestions(response.data)
-          console.log('suggestions',response.data)
-        })
-        .catch(function (error) {
-          console.log(error);
-        })
+
+    console.log('suggestionAPIRequest',suggestionAPIRequest)
+    if (suggestionAPIRequest != null) {
+      console.log('clearing an already going request')
+      clearTimeout(suggestionAPIRequest)
+    }
+
+
+    suggestionAPIRequest = setTimeout(async() => {
+      await axios.get(`${GET_SUGGESTION_URL}?searchQuery=${text}`)
+          .then(function (response) {
+            setResults(null);
+            setSuggestions(response.data)
+            console.log('suggestions',response.data)
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+    }, 400);
   }
 
   return (
